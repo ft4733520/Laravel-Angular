@@ -11,33 +11,34 @@ class User extends Model
 	//注册
     public function signup()
     {
-    	// dd(Request::get('password'));
-    	// dd(Request::has(''));
-    	// dd(Request::all());
-    	$has_username_and_password = $this->has_username_and_password();
-    	if(!$has_username_and_password)
-    		return err('用户名和密码皆不可为空');
-    	$username = $has_username_and_password[0];
-    	$password = $has_username_and_password[1];
-    	//检查是否存在
-    	$user_exists = $this->where('username',$username)
-    						->exists();
-    	if ($user_exists)
-    		return err('用户名已存在');
-    	
-    	//加密
-    	$hashed_password = Hash::make($password);
-    	// $hashed_password = bcrypt($password);
+        // dd(Request::get('password'));
+        // dd(Request::has(''));
+        // dd(Request::all());
+        $has_username_and_password = $this->has_username_and_password();
+        if(!$has_username_and_password)
+            return err('用户名和密码皆不可为空');
+        $username = $has_username_and_password[0];
+        $password = $has_username_and_password[1];
+        //检查是否存在
+        $user_exists = $this->where('username',$username)
+                            ->exists();
+        if ($user_exists)
+            return err('用户名已存在');
+        
+        //加密
+        $hashed_password = Hash::make($password);
+        // $hashed_password = bcrypt($password);
 
-    	//入库
-    	$user = $this;
-    	$user->password = $hashed_password;
-    	$user->username = $username;
-    	if ($user->save()) {
-    		return suc(['id'=>$user->id]);
-    	}else{
-    		return err('db insert failed');
-    	}
+        //入库
+        $user = $this;
+        $user->password = $hashed_password;
+        $user->username = $username;
+        if ($user->save()) {
+            return suc(['id'=>$user->id]);
+        }else{
+            return err('db insert failed');
+        }
+        var_dump($user);die;
     	// dd($hashed_password);
     	return 1;
     }
@@ -94,7 +95,7 @@ class User extends Model
     	$password = rq('password');
     	if ($username && $password) 
     		return [$username, $password];
-    	return $false;
+    	return false;
     }
 
     //登出
@@ -122,7 +123,7 @@ class User extends Model
     //检测是否登录
     public function is_logged_in()
     {
-    	return session('user_id') ?: false;
+    	return is_logged_in();
     }
 
     public function answers()
@@ -234,5 +235,10 @@ class User extends Model
     {
         return rand(1000,9999);
     }
+
+    public function exist()
+    {
+        return suc(['count'=> $this->where(rq())->count()]);
+    }    
 
 }

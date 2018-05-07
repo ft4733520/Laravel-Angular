@@ -16,6 +16,10 @@
 		return Request::get($key, $default);
 	}
 
+	function is_logged_in()
+	{
+		return session('user_id') ?: false;
+	}
 
 	function user_ins()
 	{
@@ -90,6 +94,10 @@
 
 	Route::any('api/user/validate_reset_password', function () {
 	    return user_ins()->validate_reset_password();
+	});
+
+	Route::any('api/user/exist', function () {
+	    return user_ins()->exist();
 	});
 
 	Route::any('api/user/read', function () {
